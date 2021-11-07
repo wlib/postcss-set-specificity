@@ -1,0 +1,38 @@
+{
+  "name": "postcss-set-specificity",
+  "description": "Make the cascade more intuitive by setting selector specificities.",
+  "keywords": [
+    "postcss",
+    "plugin",
+    "postcss-plugin",
+    "css",
+    "cascade",
+    "selector",
+    "specificity"
+  ],
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": {
+    "name": "Daniel Ethridge",
+    "url": "https://git.io/de"
+  },
+  "homepage": "https://github.com/wlib/postcss-set-specificity",
+  "bugs": "https://github.com/wlib/postcss-set-specificity/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wlib/postcss-set-specificity.git"
+  },
+  "main": "./index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "parsel-js": "^1.0.2"
+  },
+  "devDependencies": {
+    "jest": "^27.3.1"
+  },
+  "peerDependencies": {
+    "postcss": "^8"
+  }
+}

@@ -1,6 +1,18 @@
 # [`postcss-set-specificity`](https://www.npmjs.com/package/postcss-set-specificity) - Set selector specificity to equal another's
 
-## Example
+<br>
+<h2>
+  Example
+
+  <a href="https://codesandbox.io/s/postcss-set-specificity-test-5cxn6?file=/index.css">
+    <img
+      alt="Open in CodeSandbox"
+      align="right"
+      src="https://img.shields.io/badge/Open_in_CodeSandbox-blue?logo=codesandbox"
+    >
+  </a>
+</h2><br>
+
 ```css
 /* Input */
 @set-specificity :root {
@@ -20,11 +32,11 @@
 }
 
 /* Output */
-:is(._,:not(._)):where(#id)::before {
+:is(*,:not(._)):where(#id)::before {
   content: "earlier, more specific selector should not match";
 }
 
-:is(._,:not(._)):where(.class)::before {
+:is(*,:not(._)):where(.class)::before {
   content: "later, less specific selector should match";
 }
 
@@ -65,9 +77,9 @@ Firefox >= 78
 ## How It Works
 Given that:
 - `:is()` and `:not()` have specificities equal to the maximum specificity within them
-- `:is(x, :not(x))` matches like the universal selector (`*`), but with the specificity of `x`
+- `:is(*, :not(x))` matches like the universal selector (`*`), but with the specificity of `x`
 - `:where()` always has a specificity of zero
-- `:is(x, :not(x)):where(y)` matches like `y`, but with the specificity of `x`
+- `:is(*, :not(x)):where(y)` matches like `y`, but with the specificity of `x`
 - the specificity of a selector can be matched in an optimal way:
   - `element#id.class:pseudo-class[attribute]::pseudo-element element *` => `1,3,3`
   - `_+_+_#_._._._` => `1,3,3`
@@ -82,7 +94,7 @@ If provided with:
 
 The plugin produces:
 ```css
-:is(_,:not(_)):where(y)::before {}
+:is(*,:not(_)):where(y)::before {}
 ```
 
 In cases where there is no selector provided, we can simply use `:where()` alone.
@@ -91,20 +103,24 @@ In cases where there is no selector provided, we can simply use `:where()` alone
 - Does not yet interoperate with [CSS Nesting](https://www.w3.org/TR/css-nesting-1/), but wouldn't be hard to with `@nest`.
 - Pseudo elements are treated as exceptions and add `0,0,1` to the specificity, as they cannot be set to zero, and simply
   subtracting will lead to inconsistency.
+- Pseudo elements must be written with the `::` prefix instead of with their old `:` prefix
 
 ### Unimplemented Optimizations
 - Calculate specificities
   - Partial shared specificity
-    - `:is(a#b.c, :not(a#b.c)):where(d#e)` to
-    - `d#e:is(.c, :not(.c))`
+    - `:is(*,:not(a#b.c)):where(d#e)` to
+    - `d#e:is(*,:not(.c))`
   - Full shared specificity
-    - `:is(a#b.c, :not(a#b.c)):where(d#e.f)` to
+    - `:is(*,:not(a#b.c)):where(d#e.f)` to
     - `d#e.f`
 - Parse selector lists for correctness
   - Valid selector list (invalid selector lists would not fail because `:where()` is supposed to be forgiving)
     - `:where(.a), :where(.b), :where(.c)` to
-    - `:where(.a, .b, .c)`
+    - `:where(.a,.b,.c)`
 - Assumptions/loose behavior
   - Assume selector never to match
-    - `:is(#🔝, :not(#🔝)):where(.a)` to
+    - `:is(*,:not(#🔝)):where(.a)` to
     - `:not(#🔝):where(.a)`
+  - Assume selector will always match (e.g. must use something like `<html id="🔝" class="🔝">`)
+    - `:is(*,:not(#_)):where(.a)` to
+    - `#🔝 :where(.a)`

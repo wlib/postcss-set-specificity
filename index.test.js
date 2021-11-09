@@ -24,7 +24,7 @@ it("one simple selector set to another simple selector", async () => {
     }
   `
   const output = `
-    :is(#_,:not(#_)):where(.class) {
+    :is(*,:not(#_)):where(.class) {
       property: value;
     }
   `
@@ -56,7 +56,7 @@ it("one selector set to another selector", async () => {
     }
   `
   const output = `
-    :is(#_._,:not(#_._)):where(element) {
+    :is(*,:not(#_._)):where(element) {
       property: value;
     }
   `
@@ -72,7 +72,7 @@ it("pseudo-elements handled as exceptions", async () => {
     }
   `
   const output = `
-    :is(._,:not(._)):where(element)::before, :is(._,:not(._)):where(.class)::after:where(:hover) {
+    :is(*,:not(._)):where(element)::before, :is(*,:not(._)):where(.class)::after:where(:hover) {
       property: value;
     }
   `
@@ -88,7 +88,7 @@ it("one selector list set to another simple selector", async () => {
     }
   `
   const output = `
-    :is(#_,:not(#_)):where(element), :is(#_,:not(#_)):where(#id), :is(#_,:not(#_)):where(.class) {
+    :is(*,:not(#_)):where(element), :is(*,:not(#_)):where(#id), :is(*,:not(#_)):where(.class) {
       property: value;
     }
   `
@@ -166,9 +166,9 @@ it("multiple rules in multiple at-rules", async () => {
 
     element {}
 
-    :is(_,:not(_)):where(.class) {}
+    :is(*,:not(_)):where(.class) {}
 
-    :is(_,:not(_)):where(#id:hover) {}
+    :is(*,:not(_)):where(#id:hover) {}
   `
   await run(input, output)
 })

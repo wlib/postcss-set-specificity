@@ -2,8 +2,7 @@ const { specificity, tokenize } = require("parsel-js")
 
 const wasProcessed = Symbol("processed by set-specificity")
 
-// Make the most performant "universal" selector of a given specificity
-const universalOfSpecificity = ([ids, classes, elements]) => {
+const selectorOfSpecificity = ([ids, classes, elements]) => {
   let selector = ""
 
   for (let e = 0; e < elements; e++)
@@ -18,8 +17,11 @@ const universalOfSpecificity = ([ids, classes, elements]) => {
   for (let c = 0; c < classes; c++)
     selector += "._"
 
-  return `:is(${selector},:not(${selector}))`
+  return selector
 }
+
+const paramsToUniversal = atRuleParams =>
+  `:is(*,:not(${selectorOfSpecificity(specificity(atRuleParams))}))`
 
 // Wrap a selector in :where()
 // Of course, pseudo elements are an exception
@@ -58,9 +60,9 @@ const processRule = atRuleParams => rule => {
       // Special case of zero specificity
       ? selector =>
           wrapInWhere(selector)
-      // General case where we need the :is(x, :not(x)) first
+      // General case where we need the :is(*,:not(x)) first
       : selector =>
-          universalOfSpecificity(specificity(atRuleParams)) +
+          paramsToUniversal(atRuleParams) +
           wrapInWhere(selector)
 
   rule.selectors = rule.selectors

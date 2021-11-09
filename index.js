@@ -28,22 +28,30 @@ const paramsToUniversal = atRuleParams =>
 const wrapInWhere = inputSelector => {
   const tokens = tokenize(inputSelector)
 
+  // // Just a *
+  // if (tokens.length === 1 && tokens[0].content === "*") {
+  //   return ""
+  // }
+
   let outputSelector = ""
   let inWhere = false
 
   for (const token of tokens) {
-    if (!inWhere) {
+    if (token.content === "*")
+      continue
+
+    if (token.type === "pseudo-element") {
+      if (inWhere) {
+        outputSelector += ")"
+        inWhere = false
+      }
+    }
+    else if (!inWhere) {
       outputSelector += ":where("
       inWhere = true
     }
 
-    if (token.type === "pseudo-element") {
-      outputSelector += ")" + token.content
-      inWhere = false
-    }
-    else {
-      outputSelector += token.content
-    }
+    outputSelector += token.content
   }
 
   if (inWhere)

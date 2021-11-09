@@ -63,7 +63,7 @@ it("one selector set to another selector", async () => {
   await run(input, output)
 })
 
-it("pseudo-elements handled as exceptions", async () => {
+it("pseudo-elements handled as exceptions outside of :where()", async () => {
   const input = `
     @set-specificity :root {
       element::before, .class::after:hover {
@@ -75,6 +75,18 @@ it("pseudo-elements handled as exceptions", async () => {
     :is(*,:not(._)):where(element)::before, :is(*,:not(._)):where(.class)::after:where(:hover) {
       property: value;
     }
+  `
+  await run(input, output)
+})
+
+it("pseudo-elements and universal selectors don't need :where()", async () => {
+  const input = `
+    @set-specificity :root {
+      *, *::before, ::after {}
+    }
+  `
+  const output = `
+    :is(*,:not(._)), :is(*,:not(._))::before, :is(*,:not(._))::after {}
   `
   await run(input, output)
 })
